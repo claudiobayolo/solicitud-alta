@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Solicitud de Alta de Servicio</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #f3f6fb 0%, #dde7f7 40%, #f5f9ff 100%);
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #4568dc 0%, #b06ab3 100%);
+      color: #fff;
+      padding: 22px 28px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    /* CONTENIDO */
+    .content-wrapper {
+      padding: 24px 28px 10px 28px;
+    }
+
+    /* SECCIONES */
+    .section {
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border-radius: 0;
+      border: none;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4568dc;
+      margin-bottom: 18px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #4568dc;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* FILAS (más compactas) */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* LABELS */
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      color: #2d3748;
+      display: block;
+    }
+
+    /* INPUTS Y SELECTS, MÁS CHICOS */
+    input,
+    select {
+      width: 100%;
+      padding: 7px 10px;
+      font-size: 13px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e0;
+      background: #f8fafc;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    input:hover,
+    select:hover {
+      border-color: #a0aec0;
+      background: #ffffff;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #4568dc;
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(69, 104, 220, 0.15);
+    }
+
+    input[readonly] {
+      background: #edf2f7;
+      color: #4a5568;
+      cursor: not-allowed;
+    }
+
+    /* TELÉFONOS */
+    .phone-group {
+      display: flex;
+    }
+
+    .phone-prefix {
+      padding: 7px 10px;
+      background: #edf2f7;
+      border: 1px solid #cbd5e0;
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      font-weight: 600;
+      color: #4a5568;
+      min-width: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .phone-input {
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* BLOQUES MULTIDIRECCIÓN (compactos) */
+    .bloque-dir {
+      border: 1px solid #e2e8f0;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+
+    .bloque-dir strong {
+      display: block;
+      font-size: 13px;
+      color: #4568dc;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    /* FOOTER */
+    .footer {
+      padding: 14px 22px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #f7fafc;
+    }
+
+    /* BOTONES */
+    button {
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-nav {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      background: #cbd5e0;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4568dc 0%, #b06ab3 100%);
+      color: #fff;
+    }
+
+    .btn-primary:disabled {
+      background: #cbd5e0;
+      color: #a0aec0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .content-wrapper {
+        padding: 18px 16px 8px 16px;
+      }
+
+      .header {
+        padding: 18px 20px;
+        font-size: 18px;
+      }
+    }
+/* Solicitud + Fecha: ambos angostos */
+.row-sol-sam {
+  grid-template-columns: 220px 220px;
+}
+
+/* RUT angosto + Cliente largo */
+.row-rut-cliente {
+  grid-template-columns: 220px 1fr;
+}
+.row-sam-razon {
+  grid-template-columns: 220px 1fr;
+}
+.row-nombre-fono {
+  grid-template-columns: 1fr 220px;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">Solicitud de Alta de Servicio</div>
+
+    <div class="content-wrapper">
+
+      <!-- ================= PANTALLA 1 ================= -->
+      <div class="section" id="pantalla1">
+        <div class="section-title">Datos de la Solicitud</div>
+
+        <div class="row row-sol-sam">
+        <div class="col">
+         <label>Solicitud de Alta Nro</label>
+         <input id="solicitud_nro" readonly>
+        </div>
+
+
+          <div class="col">
+            <label>Fecha Ingreso</label>
+            <input id="fecha_ingreso" readonly>
+          </div>
+        </div>
+
+       <div class="row row-rut-cliente">
+  <div class="col">
+    <label>RUT Cliente</label>
+    <input id="rut">
+  </div>
+
+ <div class="col">
+    <label>Cliente</label>
+    <input id="cliente" readonly>
+  </div>
+</div>
+
+         <div class="row row-sam-razon">
+         <div class="col">
+         <label>Nro SAM</label>
+         <input id="sam"
+              type="text"
+              maxlength="6"
+              inputmode="numeric"
+              pattern="\d{6}"
+              placeholder="123456"
+              required
+            >
+          </div>
+          <div class="col">
+            <label>Razón Social</label>
+            <select id="razon" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>Telefonica Chile S.A.</option>
+              <option>Telefonica Empresas S.A.</option>
+            </select>
+          </div>
+        </div>
+
+     <div class="row row-nombre-fono">
+  <div class="col">
+    <label>Ejecutivo Comercial</label>
+    <input id="ejecutivo" type="text" required>
+  </div>
+
+  <div class="col">
+    <label>Fono Ejecutivo Comercial</label>
+    <div class="phone-group">
+      <span class="phone-prefix">+56</span>
+      <input
+        id="fono_ejecutivo"
+        class="phone-input"
+        type="text"
+        maxlength="9"
+        inputmode="numeric"
+        placeholder="912345678"
+        required
+      >
+    </div>
+  </div>
+</div>
+
+
+ <div class="row row-nombre-fono">
+  <div class="col">
+    <label>Contacto Cliente</label>
+    <input id="contacto_cliente" type="text" required>
+  </div>
+
+  <div class="col">
+    <label>Fono Contacto Cliente</label>
+    <div class="phone-group">
+      <span class="phone-prefix">+56</span>
+      <input
+        id="fono_cliente"
+        class="phone-input"
+        type="text"
+        maxlength="9"
+        inputmode="numeric"
+        placeholder="912345678"
+        required
+      >
+    </div>
+  </div>
+</div>
+
+
+        <div class="row row-nombre-fono">
+  <div class="col">
+    <label>Contacto Técnico</label>
+    <input id="contacto_tecnico" type="text" required>
+  </div>
+
+  <div class="col">
+    <label>Fono Contacto Técnico</label>
+    <div class="phone-group">
+      <span class="phone-prefix">+56</span>
+      <input
+        id="fono_tecnico"
+        class="phone-input"
+        type="text"
+        maxlength="9"
+        inputmode="numeric"
+        placeholder="912345678"
+        required
+      >
+    </div>
+  </div>
+</div>
+
+
+ <div class="row row-nombre-fono">
+  <div class="col">
+    <label>Jefe de Proyecto</label>
+    <input id="jefe_proyecto" type="text" required>
+  </div>
+
+  <div class="col">
+    <label>Fono Jefe de Proyecto</label>
+    <div class="phone-group">
+      <span class="phone-prefix">+56</span>
+      <input
+        id="fono_jefe"
+        class="phone-input"
+        type="text"
+        maxlength="9"
+        inputmode="numeric"
+        placeholder="912345678"
+        required
+      >
+    </div>
+  </div>
+</div>
+
+        <div class="row">
+          <div class="col">
+            <label>Proyecto</label>
+            <input id="proyecto" type="text" required>
+          </div>
+          <div class="col">
+            <label>PEP Gasto</label>
+            <input id="pep" type="text" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= PANTALLA 2 ================= -->
+      <div class="section" id="pantalla2" style="display:none">
+        <div class="section-title">Datos del Servicio</div>
+
+        <div class="row full">
+          <div class="col">
+            <label>Proveedor</label>
+            <select id="proveedor" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>ASCENTY</option>
+              <option>CIRIO</option>
+              <option>CLARO</option>
+              <option>ENTEL</option>
+              <option>EXANET</option>
+              <option>GTD</option>
+              <option>MUNDO PACIFICO</option>
+              <option>MURANO</option>
+              <option>NETGL-LIVISTER</option>
+              <option>REDCOL</option>
+              <option>TELCOY-GTDM</option>
+              <option>TELSUR</option>
+              <option>UFINET</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Actividad</label>
+            <select id="actividad" required>
+            <option value="" selected disabled>Seleccione…</option>
+              <option>ALTA</option>
+              <option>RECONFIGURACION</option>
+              <option>UPGRADE</option>
+              <option>TRASLADO</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Tipo Dirección</label>
+            <select id="tipo_direccion" onchange="cambiarTipoDireccion()" required>
+            <option value="" selected disabled>Seleccione…</option>
+              <option value="UNICA">UNICA</option>
+              <option value="MULTI">MULTIDIRECCIÓN</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- UNICA -->
+        <div id="bloque_unica">
+          <div class="row full">
+            <div class="col">
+              <label>Dirección A</label>
+              <input id="dir_unica">
+            </div>
+          </div>
+
+          <div class="row full">
+            <div class="col">
+              <label>Dirección B</label>
+              <input id="dir_b_unica">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>Servicio</label>
+              <select id="servicio_unica" required>
+                <option value="" selected disabled>Seleccione…</option>
+                <option>Capa 2 Mpls</option>
+                <option>Capa 3 sin Calidad (BE)</option>
+                <option>Cruzada Fibra Optica</option>
+                <option>DWDM</option>
+                <option>FTTH</option>
+                <option>Infraestructura</option>
+                <option>Internet Dedicado Tasa Agregación 1_1</option>
+                <option>VPN IP</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Capacidad</label>
+              <select id="capacidad_unica" required>
+                <option value="" selected disabled>Seleccione…</option>
+                <option>1 Pelo</option>
+                <option>256 Kbps</option>
+                <option>1 Mbps</option>
+                <option>2 Mbps</option>
+                <option>10 Mbps</option>
+                <option>20 Mbps</option>
+                <option>50 Mbps</option>
+                <option>100 Mbps</option>
+                <option>1 Giga</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- MULTI -->
+        <div id="bloque_multi" style="display:none">
+          <button
+            type="button"
+            onclick="agregarDireccion()"
+            class="btn-primary"
+            style="margin-top: 4px; margin-bottom: 10px;"
+          >
+            Agregar Dirección
+          </button>
+          <div id="contenedorDirecciones"></div>
+        </div>
+
+        <div class="section-title" style="margin-top: 24px;">Costos</div>
+
+        <div class="row full">
+          <div class="col">
+            <label>Concepto Otros Costos</label>
+            <input id="concepto_otros_costos">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Moneda Otros Costos</label>
+            <select id="moneda_otros_costos" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>UF</option>
+              <option>USD</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Monto Otros Costos</label>
+            <input id="monto_otros_costos" type="number">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Moneda Instalación</label>
+            <select id="moneda_instalacion" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>UF</option>
+              <option>USD</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Costo Instalación</label>
+            <input id="costo_instalacion" type="number">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Moneda Renta</label>
+            <select id="moneda_renta" required>
+            <option value="" selected disabled>Seleccione…</option>
+              <option>UF</option>
+              <option>USD</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Valor Renta</label>
+            <input id="valor_renta" type="number">
+          </div>
+        </div>
+
+        <div class="row full">
+          <div class="col">
+            <label>Plazo Meses</label>
+            <select id="plazo_meses" required>
+            <option value="" selected disabled>Seleccione…</option>
+              <option>12</option>
+              <option>24</option>
+              <option>36</option>
+              <option>48</option>
+              <option>60</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button class="btn-nav" onclick="mostrar(1)">Anterior</button>
+      <button class="btn-nav" onclick="mostrar(2)">Siguiente</button>
+      <button id="btn_guardar"
+        class="btn-primary"
+        disabled
+        onclick="guardarSolicitud()">
+  Guardar Solicitud
+</button>
+    </div>
+  </div>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVJJmzcxnJsHGwnOnPkC77rybEcuplxdc&libraries=places"></script>
+
+  <script>
+    function mostrar(n) {
+      // validación SAM antes de ir a pantalla 2
+      if (n === 2) {
+        const sam = document.getElementById("sam");
+        if (sam.value.length !== 6) {
+          alert("El Nro SAM debe tener exactamente 6 dígitos");
+          sam.focus();
+          return;
+        }
+      }
+
+      pantalla1.style.display = n === 1 ? "block" : "none";
+      pantalla2.style.display = n === 2 ? "block" : "none";
+
+      // habilitar Guardar solo en pantalla 2
+      const btnGuardar = document.getElementById("btn_guardar");
+      btnGuardar.disabled = (n !== 2);
+    }
+
+    // Autocomplete cliente por RUT
+    document.addEventListener("DOMContentLoaded", function () {
+      const rutInput = document.getElementById("rut");
+      const clienteInput = document.getElementById("cliente");
+
+      if (!rutInput || !clienteInput) {
+        console.error("Input RUT o CLIENTE no encontrado");
+        return;
+      }
+
+      rutInput.addEventListener("blur", function () {
+        const rut = rutInput.value.trim();
+        if (!rut) {
+          clienteInput.value = "";
+          return;
+        }
+
+        fetch("/buscar_cliente?rut=" + encodeURIComponent(rut))
+          .then(r => r.json())
+          .then(data => {
+            if (data.cliente) {
+              clienteInput.value = data.cliente;
+            } else {
+              clienteInput.value = "";
+              alert("RUT no encontrado en base de clientes");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert("Error consultando cliente");
+          });
+      });
+    });
+
+    function cambiarTipoDireccion() {
+      const esMulti = tipo_direccion.value === "MULTI";
+
+      bloque_unica.style.display = esMulti ? "none" : "block";
+      bloque_multi.style.display = esMulti ? "block" : "none";
+
+      if (esMulti) {
+        contenedorDirecciones.innerHTML = "";
+        contadorDirecciones = 0;
+        agregarDireccion();
+      }
+    }
+
+    let contadorDirecciones = 0;
+
+    function agregarDireccion() {
+      if (contadorDirecciones >= 40) {
+        alert("Máximo 40 direcciones");
+        return;
+      }
+
+      contadorDirecciones++;
+
+      const d = document.createElement("div");
+      d.className = "bloque-dir";
+
+      d.innerHTML = `
+        <strong>Dirección ${contadorDirecciones}</strong>
+
+        <div class="row full">
+          <div class="col">
+            <label>Dirección</label>
+            <input class="direccion_multi">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Servicio</label>
+            <select class="servicio_multi" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>Capa 2 Mpls</option>
+              <option>Capa 3 sin Calidad (BE)</option>
+              <option>Cruzada Fibra Optica</option>
+              <option>DWDM</option>
+              <option>FTTH</option>
+              <option>Infraestructura</option>
+              <option>Internet Dedicado Tasa Agregación 1_1</option>
+              <option>VPN IP</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Capacidad</label>
+            <select class="capacidad_multi" required>
+              <option value="" selected disabled>Seleccione…</option>
+              <option>1 Pelo</option>
+              <option>256 Kbps</option>
+              <option>1 Mbps</option>
+              <option>2 Mbps</option>
+              <option>10 Mbps</option>
+              <option>20 Mbps</option>
+              <option>20 MB / 10 MB</option>
+              <option>50 Mbps</option>
+              <option>60 Mbps</option>
+              <option>100 Mbps</option>
+              <option>200 Mbps</option>
+              <option>300 Mbps</option>
+              <option>400 Mbps</option>
+              <option>600 Mbps</option>
+              <option>800 Mbps</option>
+              <option>1 Giga</option>
+              <option>1G / 500M</option>
+            </select>
+          </div>
+        </div>
+      `;
+
+      contenedorDirecciones.appendChild(d);
+
+      new google.maps.places.Autocomplete(
+        d.querySelector(".direccion_multi"),
+        { componentRestrictions: { country: "cl" } }
+      );
+    }
+
+    fetch("/init")
+      .then(r => r.json())
+      .then(d => {
+        solicitud_nro.value = d.solicitudNro;
+        fecha_ingreso.value = d.fechaIngreso;
+      });
+
+    function resetearMultidireccion() {
+      contenedorDirecciones.innerHTML = "";
+      contadorDirecciones = 0;
+      agregarDireccion();
+    }
+
+    // máscaras de teléfonos y SAM
+
+    document.addEventListener("input", (e) => {
+      if (e.target.classList.contains("phone-input")) {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 9);
+      }
+      if (e.target.id === "sam") {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6);
+      }
+    });
+
+    function obtenerDirecciones() {
+  const arr = [];
+  document.querySelectorAll(".bloque-dir").forEach((b, i) => {
+    arr.push({
+      numero: i + 1,
+      direccion: b.querySelector(".direccion_multi").value,
+      servicio: b.querySelector(".servicio_multi").value,
+      capacidad: b.querySelector(".capacidad_multi").value
+    });
+  });
+  return arr;
+}
+
+function guardarSolicitud() {
+
+  const payload = {
+  fechaIngreso: fecha_ingreso.value,
+  rutCliente: rut.value,
+  cliente: cliente.value,
+  nroSAM: sam.value,
+  razonSocial: razon.value,
+  ejecutivoComercial: ejecutivo.value,
+  fonoEjecutivo: "+56" + fono_ejecutivo.value,
+  contactoCliente: contacto_cliente.value,
+  fonoContactoCliente: "+56" + fono_cliente.value,
+  contactoTecnico: contacto_tecnico.value,
+  fonoContactoTecnico: "+56" + fono_tecnico.value,
+  jefeProyecto: jefe_proyecto.value,
+  fonoJefeProyecto: "+56" + fono_jefe.value,
+  proyecto: proyecto.value,
+  pepGasto: pep.value,
+
+  proveedor: proveedor.value,
+  actividad: actividad.value,
+  tipoDireccion: tipo_direccion.value,
+
+  conceptoOtrosCostos: concepto_otros_costos.value,
+  monedaOtrosCostos: moneda_otros_costos.value,
+  montoOtrosCostos: monto_otros_costos.value,
+  monedaInstalacion: moneda_instalacion.value,
+  costoInstalacion: costo_instalacion.value,
+  monedaRenta: moneda_renta.value,
+  valorRenta: valor_renta.value,
+  plazoMeses: plazo_meses.value,
+
+  direcciones:
+    tipo_direccion.value === "MULTI"
+      ? obtenerDirecciones()
+      : [{
+          numero: 1,
+          direccion: dir_unica.value,
+          servicio: servicio_unica.value,
+          capacidad: capacidad_unica.value
+        }]
+};
+
+
+  console.log("Payload enviado:", payload); // 👈 MUY IMPORTANTE
+
+  fetch("/guardar_solicitud", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(resp => {
+  if (resp.status === "OK") {
+    alert("Solicitud guardada correctamente");
+  } else {
+    alert("Error");
+  }
+})
+
+  .catch(err => {
+    console.error(err);
+    alert("Error enviando solicitud");
+  });
+}
+
+
+  function activarAutocompleteDireccionesFijas() {
+    const dirA = document.getElementById("dir_unica");
+    const dirB = document.getElementById("dir_b_unica");
+
+    if (dirA) {
+      new google.maps.places.Autocomplete(dirA, {
+        componentRestrictions: { country: "cl" }
+      });
+    }
+
+    if (dirB) {
+      new google.maps.places.Autocomplete(dirB, {
+        componentRestrictions: { country: "cl" }
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", activarAutocompleteDireccionesFijas);
+</script>
+
+</body>
+
+</html>
+
+
