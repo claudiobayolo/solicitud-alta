@@ -187,24 +187,26 @@ def guardar():
 
 @app.route("/buscar_cliente")
 def buscar_cliente():
-    rut = request.args.get("rut", "")
-    rut = normalizar_rut(rut)
-
-    if not rut:
+    rut = normalizar_rut(request.args.get("rut", ""))
+    if len(rut) < 8:
         return jsonify({"cliente": ""})
-
+    
+    import requests
+    url = "https://drive.google.com/uc?export=download&id=10EUZK61nkiZ90IbNOYLjAtnWKz-9IKPx"
+    
     try:
-        with open("/home/cfbayolo/Clientes.txt", encoding="utf-8") as f:
-            for linea in f:
-                linea = linea.strip()
-                if not linea or ";" not in linea:
-                    continue
-                rut_txt, cliente = linea.split(";", 1)
-                if normalizar_rut(rut_txt) == rut:
+        resp = requests.get(url, stream=True, timeout=30)
+        resp.raise_for_status()
+        for linea in resp.iter_lines(decode_unicode=True):
+            linea = linea.decode('utf-8').strip()
+            if ';' in linea and not linea.startswith('RUT_Cliente'):
+                rut_txt, cliente = linea.split(';', 1)
+                if normalizar_rut(rut_txt.strip()) == rut:
                     return jsonify({"cliente": cliente.strip()})
-        return jsonify({"cliente": ""})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error clientes: {e}")
+    
+    return jsonify({"cliente": ""})
 
 @app.route("/api/obtener_pendientes", methods=["GET"])
 def obtener_pendientes():
