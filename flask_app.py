@@ -212,7 +212,7 @@ def buscar_cliente():
 def obtener_pendientes():
     db = get_db()
     cur = db.cursor()
-cur.execute("""
+    cur.execute("""
     SELECT * FROM solicitud s
     LEFT JOIN sync_estado se ON s.id = se.solicitud_id
     WHERE se.estado_sync IS NULL OR se.estado_sync != 'SINCRONIZADO'
@@ -242,6 +242,4 @@ def marcar_sincronizado():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
 
