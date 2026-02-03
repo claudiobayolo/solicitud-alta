@@ -246,6 +246,13 @@
 .row-nombre-fono {
   grid-template-columns: 1fr 220px;
 }
+
+/* === CAMPOS INVÁLIDOS === */
+.campo-error {
+  border: 2px solid #e53e3e !important;
+  background-color: #fff5f5 !important;
+}
+
   </style>
 </head>
 
@@ -972,6 +979,86 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+/* =============================
+   MEJORA 1 – CONFIRMAR ANTES DE GUARDAR
+   ============================= */
+const guardarSolicitud_original = guardarSolicitud;
+
+guardarSolicitud = function () {
+  if (!confirm("¿Está seguro de guardar los datos de la solicitud?")) {
+    return;
+  }
+
+  guardarSolicitud_original();
+};
+
+/* =============================
+   MARCAR CAMPOS VACÍOS – UX
+   ============================= */
+function marcarCamposVaciosPantalla1() {
+  let ok = true;
+  const campos = pantalla1.querySelectorAll("input, select");
+
+  campos.forEach(campo => {
+    campo.classList.remove("campo-error");
+
+    if (campo.hasAttribute("readonly")) return;
+
+    if (!campo.value || campo.value.trim() === "") {
+      campo.classList.add("campo-error");
+      ok = false;
+    }
+  });
+
+  const rut = document.getElementById("rut");
+  if (rut && !validarRUT(rut.value)) {
+    rut.classList.add("campo-error");
+    ok = false;
+  }
+
+  return ok;
+}
+/* =============================
+   ENGANCHE UX VALIDACIÓN
+   ============================= */
+document.addEventListener("click", (e) => {
+  if (e.target.matches('.btn-nav') && e.target.textContent.trim() === 'Siguiente') {
+    marcarCamposVaciosPantalla1();
+  }
+});
+/* =============================
+   BLOQUEAR DOBLE CLICK GUARDAR
+   ============================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btn_guardar");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.disabled = false;
+    }, 4000);
+  });
+});
+/* =============================
+   LIMPIAR FORMULARIO POST-GUARDADO
+   ============================= */
+document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("solicitud-guardada-ok", () => {
+
+    document.querySelectorAll("input, select").forEach(el => {
+      if (el.hasAttribute("readonly")) return;
+      el.value = "";
+      el.classList.remove("campo-error");
+    });
+
+    pantalla2.style.display = "none";
+    pantalla1.style.display = "block";
+    btn_guardar.disabled = true;
+  });
+});
+
+
 </script>
 
 
@@ -979,8 +1066,5 @@ document.addEventListener("DOMContentLoaded", () => {
 </body>
 
 </html>
-
-
-
 
 
