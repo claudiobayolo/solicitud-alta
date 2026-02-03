@@ -142,7 +142,7 @@ def guardar():
     sql_sync = "pendiente"
 
     # SQL Server directo
-    try:
+    try:        
     conn_sql = pyodbc.connect(SQL_CONN_STR)
     cur_sql = conn_sql.cursor()
     cur_sql.execute("""
