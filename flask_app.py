@@ -143,9 +143,9 @@ def guardar():
 
     # SQL Server directo
     try:
-        conn_sql = pyodbc.connect(SQL_CONN_STR)
-        cur_sql = conn_sql.cursor()
-        cur_sql.execute("""
+    conn_sql = pyodbc.connect(SQL_CONN_STR)
+    cur_sql = conn_sql.cursor()
+    cur_sql.execute("""
             INSERT INTO solicitud (fechaingreso, rutcliente, cliente, nrosam, razonsocial, ejecutivocomercial,
                                    fonoejecutivo, contactocliente, fonocontactocliente, contactotecnico,
                                    fonocontactotecnico, jefeproyecto, fonojefeproyecto, proyecto, pepgasto,
