@@ -867,10 +867,120 @@ function guardarSolicitud() {
   }
 
   document.addEventListener("DOMContentLoaded", activarAutocompleteDireccionesFijas);
+  
+  
+/* =============================
+   PARTE 1 – DESACTIVAR VALIDACIÓN CLIENTE
+   ============================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const rutInput = document.getElementById("rut");
+  const clienteInput = document.getElementById("cliente");
+
+  if (!rutInput || !clienteInput) return;
+
+  // Clonamos el input para eliminar listeners anteriores
+  const rutNuevo = rutInput.cloneNode(true);
+  rutInput.parentNode.replaceChild(rutNuevo, rutInput);
+
+  // Al escribir RUT, limpiamos cliente (sin validar nada)
+  rutNuevo.addEventListener("input", () => {
+    clienteInput.value = "";
+  });
+});
+
+/* =============================
+   PARTE 2 – VALIDACIÓN RUT CHILENO
+   ============================= */
+function validarRUT(rut) {
+  if (!rut) return false;
+
+  rut = rut.replace(/\./g, "").replace("-", "").toUpperCase();
+
+  if (!/^\d{7,8}[0-9K]$/.test(rut)) return false;
+
+  const cuerpo = rut.slice(0, -1);
+  const dv = rut.slice(-1);
+
+  let suma = 0;
+  let multiplo = 2;
+
+  for (let i = cuerpo.length - 1; i >= 0; i--) {
+    suma += multiplo * parseInt(cuerpo[i], 10);
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+
+  const dvEsperado = 11 - (suma % 11);
+  const dvCalculado =
+    dvEsperado === 11 ? "0" :
+    dvEsperado === 10 ? "K" :
+    dvEsperado.toString();
+
+  return dv === dvCalculado;
+}
+
+/* =============================
+   PARTE 3 – VALIDAR PANTALLA 1
+   ============================= */
+function validarPantalla1() {
+  const campos = pantalla1.querySelectorAll("input, select");
+
+  for (const campo of campos) {
+    if (campo.hasAttribute("readonly")) continue;
+
+    if (!campo.value || campo.value.trim() === "") {
+      alert("Debe completar todos los campos antes de continuar");
+      campo.focus();
+      return false;
+    }
+  }
+
+  const rutValor = document.getElementById("rut").value;
+  if (!validarRUT(rutValor)) {
+    alert("RUT inválido");
+    document.getElementById("rut").focus();
+    return false;
+  }
+
+  return true;
+}
+/* =============================
+   PARTE 3 – SOBRESCRIBIR mostrar()
+   ============================= */
+const mostrar_original = mostrar;
+
+mostrar = function (n) {
+  if (n === 2) {
+    if (!validarPantalla1()) return;
+  }
+
+  pantalla1.style.display = n === 1 ? "block" : "none";
+  pantalla2.style.display = n === 2 ? "block" : "none";
+
+  btn_guardar.disabled = (n !== 2);
+};
+
+/* =============================
+   PARTE 4 – OCULTAR BOTÓN SIGUIENTE
+   ============================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const botones = document.querySelectorAll(".btn-nav");
+
+  botones.forEach(boton => {
+    if (boton.textContent.trim().toUpperCase() === "SIGUIENTE") {
+      boton.style.display = "none";
+    }
+  });
+});
+
 </script>
+
+
 
 </body>
 
 </html>
+
+
+
 
 
