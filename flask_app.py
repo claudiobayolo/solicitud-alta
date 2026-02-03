@@ -71,8 +71,8 @@ CREATE TABLE IF NOT EXISTS sync_estado (
 )
 """)
 
-    db.commit()
-    db.close()
+db.commit()
+db.close()
 
 # Inicializa BBDD
 init_db()
