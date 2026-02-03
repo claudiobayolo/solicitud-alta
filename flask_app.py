@@ -373,42 +373,112 @@ def guardar():
 @app.route("/buscar_cliente")
 @handle_errors
 def buscar_cliente():
-    """Busca nombre de cliente por RUT en archivo compartido."""
+    """Busca nombre de cliente por RUT en archivo compartido de Google Drive."""
     rut = normalizar_rut(request.args.get("rut", ""))
     
-    if not validar_rut(rut):
-        return jsonify({"cliente": "", "validacion": False}), 400
+    if not rut or not validar_rut(rut):
+        logger.warning(f"RUT inválido o vacío: {rut}")
+        return jsonify({"cliente": "", "validacion": False, "error": "RUT inválido"}), 400
     
     url = "https://drive.google.com/uc?export=download&id=10EUZK61nkiZ90IbNOYLjAtnWKz-9IKPx"
     
     try:
-        resp = requests.get(url, stream=True, timeout=30)
+        logger.info(f"🔍 Buscando RUT: {rut}")
+        
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        resp = requests.get(url, stream=True, timeout=15, headers=headers, allow_redirects=True)
         resp.raise_for_status()
         
-        for linea in resp.iter_lines(decode_unicode=True):
-            if isinstance(linea, bytes):
-                linea = linea.decode('utf-8')
+        logger.info(f"✅ Archivo descargado. Status: {resp.status_code}")
+        
+        cliente_encontrado = None
+        ruts_encontrados = []  # Para debug
+        lineas_procesadas = 0
+        lineas_con_datos = 0
+        
+        for linea_raw in resp.iter_lines(decode_unicode=True):
+            lineas_procesadas += 1
+            
+            if isinstance(linea_raw, bytes):
+                linea = linea_raw.decode('utf-8', errors='ignore')
+            else:
+                linea = linea_raw
             
             linea = linea.strip()
-            if ';' in linea and not linea.startswith('RUT_Cliente'):
-                try:
-                    rut_txt, cliente = linea.split(';', 1)
-                    if normalizar_rut(rut_txt.strip()) == rut:
-                        logger.info(f"Cliente encontrado para RUT: {rut}")
-                        return jsonify({"cliente": cliente.strip(), "validacion": True}), 200
-                except ValueError:
+            
+            # Saltar línea vacía o cabecera
+            if not linea or linea.lower().startswith('rut'):
+                continue
+            
+            # Detectar separador (puede ser ; , o |)
+            separadores = [';', ',', '|', '\t']
+            separador_usado = None
+            
+            for sep in separadores:
+                if sep in linea:
+                    separador_usado = sep
+                    break
+            
+            if not separador_usado:
+                logger.debug(f"Línea {lineas_procesadas} sin separador: {linea[:50]}")
+                continue
+            
+            try:
+                partes = linea.split(separador_usado)
+                if len(partes) < 2:
                     continue
+                
+                rut_txt = partes[0].strip()
+                cliente = partes[1].strip()
+                
+                if not rut_txt or not cliente:
+                    continue
+                
+                rut_normalizado = normalizar_rut(rut_txt)
+                lineas_con_datos += 1
+                
+                # Guardar primeros 5 RUT para debug
+                if len(ruts_encontrados) < 5:
+                    ruts_encontrados.append(f"{rut_txt} → {rut_normalizado}")
+                
+                # Buscar coincidencia
+                if rut_normalizado == rut:
+                    cliente_encontrado = cliente
+                    logger.info(f"✅ ENCONTRADO: RUT {rut} = {cliente}")
+                    break
+            
+            except Exception as e:
+                logger.debug(f"Error en línea {lineas_procesadas}: {e}")
+                continue
         
-        logger.warning(f"RUT no encontrado: {rut}")
-        return jsonify({"cliente": "", "validacion": False}), 404
+        # Log detallado
+        logger.info(f"📊 RESUMEN: Lineas={lineas_procesadas}, Con datos={lineas_con_datos}")
+        if ruts_encontrados:
+            logger.info(f"📋 Primeros RUT encontrados: {ruts_encontrados}")
+        
+        if cliente_encontrado:
+            return jsonify({
+                "cliente": cliente_encontrado,
+                "validacion": True,
+                "encontrado": True
+            }), 200
+        else:
+            logger.warning(f"❌ RUT {rut} no encontrado después de procesar {lineas_con_datos} registros")
+            return jsonify({
+                "cliente": "",
+                "validacion": False,
+                "encontrado": False,
+                "mensaje": f"RUT {rut} no encontrado"
+            }), 404
     
-    except requests.RequestException as e:
-        logger.error(f"Error descargando archivo de clientes: {e}")
+    except Exception as e:
+        logger.error(f"❌ ERROR en buscar_cliente: {type(e).__name__}: {str(e)}", exc_info=True)
         return jsonify({
             "cliente": "",
             "validacion": False,
-            "error": "No se pudo descargar el catálogo de clientes"
-        }), 503
+            "error": str(e)
+        }), 500
+
 
 @app.route("/api/obtener_pendientes", methods=["GET"])
 @handle_errors
