@@ -14,5 +14,5 @@ WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir --upgrade pip && pip install -r requirements.txt
 
-EXPOSE $PORT
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "flask_app:app"]
+# Render inyecta $PORT runtime, NO EXPOSE
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT flask_app:app"]
